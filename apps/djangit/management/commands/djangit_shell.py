@@ -13,7 +13,6 @@ from djangit.models import *
 
 logger = logging.getLogger('djangit.shell')
 
-
 class Command(LabelCommand):
     def handle_label(self, username, *args, **options):
         """
@@ -24,21 +23,24 @@ class Command(LabelCommand):
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
+            logger.error("Unknown user.")
             sys.exit(1)
 
         repo_dir = getattr(settings, 'REPOSITORY_DIRECTORY', None)
         os.chdir(repo_dir) 
         if not repo_dir:
+            logger.error("Missing REPOSITORY_DIRECTORY!")
             sys.exit(1)
 
         git_shell = getattr(settings, 'GIT_SHELL_PATH', 'git-shell')
         ssh_original_command = os.environ.get('SSH_ORIGINAL_COMMAND', None)
         if not ssh_original_command:
+            logger.error("Missing SSH_ORIGINAL_COMMAND!")
             sys.exit(1)
-
 
         matches = re.match(r"""(?P<command>\S+)\s+'(?P<repo>[^']+)'""", ssh_original_command)
         if not matches:
+            logger.error("Unmatched command! '%s'" % (ssh_original_command,))
             sys.exit(1)
 
         cmd = matches.group('command')
@@ -47,26 +49,31 @@ class Command(LabelCommand):
             repository = repository[:-4]
 
         if '/' not in repository: # ...
+            logger.error("Must specify project_slug/repo_name.")
             sys.exit(1)
 
         project_slug, repo_name = repository.split('/', 1) 
 
-
         qs = None
         try:
             project = Project.objects.get(slug=project_slug)
-            qs = project.repo_set.filter(Q(name=repo_name) | Q(aliases__contains=repsitory))
+            qs = project.repo_set.filter(Q(name=repo_name) | Q(aliases__contains=repository))
         except Project.DoesNotExist as e:
             qs = Repo.objects.filter(aliases__contains=repository)
 
         if len(qs) < 1:
+            logger.error("No such repository.")
             sys.exit(1)
-        repo = qs[0] # FIXME
+        elif len(qs) > 1:
+            logger.error("Ambiguous repository?")
+            sys.exit(1)
+        repo = qs[0]
 
         if not repo.user_has_access(user):
+            logger.error("Access denied.")
             sys.exit(1)
 
         new_command = "%s '%s'" % (cmd, repo.path)
-        logger.debug('djangit.shell:rewrote command: "%s" -> "%s"' % (ssh_original_command, new_command,))
+        logger.debug('rewrote command: "%s" -> "%s"' % (ssh_original_command, new_command,))
         subprocess.call([git_shell, '-c', new_command])
         sys.exit(0)

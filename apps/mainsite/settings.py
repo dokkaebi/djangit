@@ -103,6 +103,18 @@ LOGGING = {
             'filename': os.path.join(LOG_DIR, 'djangit.log'),
             'maxBytes': 1024*1024,
             'backupCount': 3,
+        },
+
+        'shell_output': {
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter': 'git_shell',
+        },
+
+    },
+    'formatters': {
+        'git_shell': {
+            'format': "%(name)s:%(levelname)s: %(message)s"
         }
     },
     'loggers': {
@@ -112,7 +124,10 @@ LOGGING = {
             'propagate': True,
         },
         'djangit.shell': {
-            'handlers': ['djangit_log'],
+            'handlers': [
+                #'djangit_log',
+                'shell_output'
+            ],
             'level': 'DEBUG',
         }
     }

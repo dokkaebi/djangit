@@ -40,9 +40,16 @@ class Repo(basic_models.DefaultModel):
     def __unicode__(self):
         return self.path
 
-    def user_has_access(self, user):
+    def get_user_access(self, user):
         user_groups = user.groups.all()
-        return self.project.projectmember_set.filter(models.Q(user=user) | models.Q(group__in=user.groups.all())).count() > 0
+        qs = self.project.projectmember_set.filter(
+            models.Q(user=user) | 
+            models.Q(group__in=user.groups.all())
+        )
+        for rec in qs:
+            if rec.access in (ProjectMember.ACCESS_WRITABLE,ProjectMember.ACCESS_READONLY):
+                return rec.access
+        return None
 
 class RepoMember(TeamMemberBase):
     repo = models.ForeignKey(Repo)

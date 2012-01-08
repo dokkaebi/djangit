@@ -11,7 +11,14 @@ from django.db.models import Q
 
 from djangit.models import *
 
+__all__ = ['Command']
+
 logger = logging.getLogger('djangit.shell')
+
+READONLY_COMMANDS = [
+    "git-upload-pack",
+    "git upload-pack",
+]
 
 class Command(LabelCommand):
     def handle_label(self, username, *args, **options):
@@ -43,7 +50,7 @@ class Command(LabelCommand):
             logger.error("Unmatched command! '%s'" % (ssh_original_command,))
             sys.exit(1)
 
-        cmd = matches.group('command')
+        command = matches.group('command')
         repository = matches.group('repo')
         if repository.endswith('.git'):
             repository = repository[:-4]
@@ -69,11 +76,23 @@ class Command(LabelCommand):
             sys.exit(1)
         repo = qs[0]
 
-        if not repo.user_has_access(user):
-            logger.error("Access denied.")
-            sys.exit(1)
+        access = repo.get_user_access(user)
+        if access != RepoMember.ACCESS_WRITABLE:
+            if access != RepoMember.ACCESS_READONLY:
+                logger.error("Read access denied.")
+                sys.exit(1)
 
-        new_command = "%s '%s'" % (cmd, repo.path)
+            if command not in READONLY_COMMANDS:
+                logger.error("Write access denied.")
+                sys.exit(1)
+
+        repo_path = '%s.git' % (os.path.join(repo_dir, repo.path),)
+        if not os.path.exists(repo_path):
+            # if the repo doesn't exist, but is in the models, initialize an empty one
+            os.makedirs(repo_path)
+            subprocess.call(["git", "--git-dir=.", "init", "--bare"], cwd=repo_path)
+
+        new_command = "%s '%s'" % (command, repo.path)
         logger.debug('rewrote command: "%s" -> "%s"' % (ssh_original_command, new_command,))
         subprocess.call([git_shell, '-c', new_command])
         sys.exit(0)

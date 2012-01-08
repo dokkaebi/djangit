@@ -6,7 +6,7 @@ import re
 from django.core.management.base import LabelCommand, CommandError
 
 from django.contrib.auth.models import User
-from djangitosis.models import *
+from djangit.models import *
 
 
 

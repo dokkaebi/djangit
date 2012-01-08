@@ -1,5 +1,5 @@
 from django.contrib import admin
-from djangitosis.models import *
+from djangit.models import *
 import basic_models.admin
 
 class PubkeyAdmin(admin.ModelAdmin):

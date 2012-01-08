@@ -19,7 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
 
     'mainsite',
-    'djangitosis',
+    'djangit',
 ]
 
 
@@ -86,6 +86,9 @@ USE_I18N = True
 USE_L10N = True
 
 
+LOG_DIR = os.path.join(TOP_DIR, 'log')
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
 
 LOGGING = {
     'version': 1,
@@ -94,6 +97,12 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'djangit_log': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'djangit.log'),
+            'maxBytes': 1024*1024,
+            'backupCount': 3,
         }
     },
     'loggers': {
@@ -102,6 +111,10 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'djangit.shell': {
+            'handlers': ['djangit_log'],
+            'level': 'DEBUG',
+        }
     }
 }
 

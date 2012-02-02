@@ -10,6 +10,11 @@ if APPS_DIR not in sys.path:
 from mainsite import TOP_DIR
 
 INSTALLED_APPS = [
+    'admin_tools',
+    'admin_tools.theming',
+    'admin_tools.menu',
+    'admin_tools.dashboard',
+
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -49,7 +54,7 @@ TEMPLATE_LOADERS = [
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
 ]
-JINGO_EXCLUDE_APPS = ('admin','registration','debug_toolbar',)
+JINGO_EXCLUDE_APPS = ('admin','registration','debug_toolbar','admin_tools')
 
 
 STATICFILES_FINDERS = [
@@ -57,8 +62,11 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
+#ADMIN_TOOLS_INDEX_DASHBOARD = 'djangit.dashboard.CustomIndexDashboard'
+ADMIN_TOOLS_THEMING_CSS = 'css/theming.css'
 
 STATICFILES_DIRS = [
+    '/Users/austinlally/projects/djangit/env/lib/python2.6/site-packages/admin_tools/media/admin_tools/',
 ]
 
 STATIC_ROOT = os.path.join(TOP_DIR, 'static')
@@ -77,7 +85,8 @@ AUTHENTICATION_BACKENDS = [
 ROOT_URLCONF = 'mainsite.urls'
 
 TEMPLATE_DIRS = (
-    os.path.join(TOP_DIR, 'templates'),
+     os.path.join(APPS_DIR, 'djangit/templates'),
+#    os.path.join(TOP_DIR, 'templates'),
 )
 
 SITE_ID = 1

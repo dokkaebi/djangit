@@ -10,6 +10,7 @@ handler500 = 'mainsite.views.error500'
 handler404 = 'mainsite.views.error404'
 
 urlpatterns = patterns('',
+    url(r'^admin_tools/', include('admin_tools.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/', LoginView.as_view()),
     url(r'', include('djangit.urls')),

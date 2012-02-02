@@ -7,8 +7,6 @@ from mainsite.models import TeamMemberBase
 
 from hashlib import md5
 
-
-
 class Pubkey(basic_models.DefaultModel):
     user = models.ForeignKey("auth.User")
     key = models.TextField()
@@ -20,7 +18,6 @@ class Pubkey(basic_models.DefaultModel):
 
     def __unicode__(self):
         return self.key_ident
-
 
 class Project(basic_models.SlugModel):
     pass
@@ -53,3 +50,14 @@ class Repo(basic_models.DefaultModel):
 
 class RepoMember(TeamMemberBase):
     repo = models.ForeignKey(Repo)
+
+
+# Using a proxy model so we can register another Admin 
+# class.  UserPubkey and UserPubkeyAdmin will be used by 
+# users to manage their own keys; Pubkey and PubkeyAdmin 
+# are used by managers to manage all keys.
+class UserPubkey(Pubkey):
+    class Meta:
+        verbose_name='public key'
+        proxy=True
+

@@ -1,0 +1,33 @@
+
+a.logout {
+	position:absolute;
+	right:20px;
+}
+
+#list table {
+    width: 100%;
+    color: #fff;
+    background: #08324a;
+}
+#list thead tr {
+    width: 100%;
+}
+
+#list thead th {
+    background: #032c40;
+    padding: 0 0 0 22px;
+    height: 37px;
+    line-height: 37px;
+    border-bottom: 1px solid #021c29;
+    white-space: nowrap;
+}
+#list tbody td {
+    background: #08324a;
+    border-top: 1px solid #05496c;
+    border-bottom: 1px solid #021c29;
+    padding: 10px 0 10px 22px;
+}
+#list tbody a, #list tbody a:visited {
+    text-decoration: none;
+    color: #fff;
+}

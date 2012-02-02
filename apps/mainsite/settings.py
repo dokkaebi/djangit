@@ -62,7 +62,7 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
-#ADMIN_TOOLS_INDEX_DASHBOARD = 'djangit.dashboard.CustomIndexDashboard'
+ADMIN_TOOLS_INDEX_DASHBOARD = 'djangit.dashboard.CustomIndexDashboard'
 ADMIN_TOOLS_THEMING_CSS = 'css/theming.css'
 
 STATICFILES_DIRS = [

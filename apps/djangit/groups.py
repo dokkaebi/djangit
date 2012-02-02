@@ -4,9 +4,10 @@ from django.db.models import Q
 from djangit.models import *
 import itertools
 
+#create manager and user groups if they aren't yet in the database.
 manager, created = Group.objects.get_or_create(name="manager")
 if created:
-	_admin_codenames=[p+'_'+s for p in ['add', 'delete', 'change'] for s in ['pubkey', 'repo', 'project', 'projectmember', 'repomember']]
+	_admin_codenames=[p+'_'+s for p in ['add', 'delete', 'change'] for s in ['pubkey', 'repo', 'project', 'projectmember', 'repomember', 'user']]
 	for p in Permission.objects.filter(codename__in=_admin_codenames):
 	    manager.permissions.add(p)
 	manager.save()

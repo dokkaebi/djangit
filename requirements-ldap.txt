@@ -1,2 +1,2 @@
-python-ldap==2.3.13
+python-ldap==3.4.0
 django-auth-ldap==1.0.12
